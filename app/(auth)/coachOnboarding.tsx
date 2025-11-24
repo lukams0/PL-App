@@ -93,7 +93,7 @@ export default function CoachOnBoardingPage() {
       });
 
       // Navigate to coach main app area
-      router.replace("/(coach)/(tabs)/index");
+      router.replace("/(coach)/(tabs)");
     } catch (err: any) {
       console.error("Coach onboarding error:", err);
       setError(err.message || "Failed to complete coach onboarding");
