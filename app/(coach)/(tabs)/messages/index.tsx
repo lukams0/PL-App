@@ -59,11 +59,11 @@ export default function MessagesPage() {
   };
 
   const handleConversationPress = (conversationId: string) => {
-    //router.push(`/(coach)/messages/${conversationId}`);
+    //router.push(`/(coach)/(tabs)/messages/${conversationId}`);
   };
 
   const handleNewMessage = () => {
-    //router.push('/(coach)/messages/new');
+    //router.push('/(coach)/(tabs)/messages/new');
   };
 
   return (

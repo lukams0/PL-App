@@ -47,7 +47,7 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
         />
         <DrawerItem
           label="Athletes"
-          onPress={() => router.push('/(coach)/(tabs)/athletes/index')}
+          onPress={() => router.push('/(coach)/(tabs)/athletes')}
           activeTintColor="#7c3aed"
           inactiveTintColor="#6b7280"
           icon={({ color, size }) => <Users size={size} color={color} />}

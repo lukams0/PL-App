@@ -83,7 +83,7 @@ export default function CoachProfilePage() {
   };
 
   const handleViewAchievements = () => {
-    //router.push('/(coach)/achievements');
+    //router.push('/(coach)/(tabs)/achievements');
   };
 
   return (

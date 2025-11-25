@@ -1,14 +1,14 @@
 import {
-    Calendar,
-    ChevronRight,
-    Clock,
-    Copy,
-    Edit,
-    MoreVertical,
-    Plus,
-    Search,
-    Trash2,
-    Users
+  Calendar,
+  ChevronRight,
+  Clock,
+  Copy,
+  Edit,
+  MoreVertical,
+  Plus,
+  Search,
+  Trash2,
+  Users
 } from 'lucide-react-native';
 import { useState } from 'react';
 import { Pressable, RefreshControl, ScrollView } from 'react-native';

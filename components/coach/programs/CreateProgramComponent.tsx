@@ -1,16 +1,16 @@
-import { ProgramBlock, ProgramWorkout } from '@/app/(coach)/(tabs)/programs/create';
+import { ProgramBlock, ProgramWorkout } from "@/app/(coach)/(tabs)/programs/create";
 import {
-    ArrowLeft,
-    ArrowRight,
-    Calendar,
-    ChevronDown,
-    ChevronRight,
-    Clock,
-    Dumbbell,
-    Edit,
-    Plus,
-    Save,
-    Trash2
+  ArrowLeft,
+  ArrowRight,
+  Calendar,
+  ChevronDown,
+  ChevronRight,
+  Clock,
+  Dumbbell,
+  Edit,
+  Plus,
+  Save,
+  Trash2
 } from 'lucide-react-native';
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';

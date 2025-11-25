@@ -1,5 +1,6 @@
 import CoachDashboardComponent from '@/components/coach/dashboard/DashboardComponent';
 import { CoachProfile } from '@/types/datebase.types';
+import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 
 // Fake data for demonstration
@@ -102,23 +103,19 @@ export default function CoachDashboard() {
   };
 
   const handleViewAthletes = () => {
-    // Navigate to athletes page
-    console.log('View athletes');
+    router.push('/(coach)/(tabs)/athletes');
   };
 
   const handleViewPrograms = () => {
-    // Navigate to programs page
-    console.log('View programs');
+    router.push('/(coach)/(tabs)/programs');
   };
 
   const handleViewMessages = () => {
-    // Navigate to messages page
-    console.log('View messages');
+    router.push('/(coach)/(tabs)/messages');
   };
 
   const handleCreateProgram = () => {
-    // Navigate to create program page
-    console.log('Create program');
+    router.push('/(coach)/(tabs)/programs/create');
   };
 
   return (

@@ -86,12 +86,18 @@ export default function ProgramsPage() {
     router.push('/(coach)/(tabs)/programs/create');
   };
 
-  const handleProgramPress = (programId: string) => {
-    //router.push(`/(coach)/programs/${programId}`);
+  const handleProgramPress = (programid: string) => {
+    router.push({
+      pathname: '/(coach)/(tabs)/programs/[programid]',
+      params: { programid }
+    });
   };
 
   const handleEditProgram = (programId: string) => {
-    //router.push(`/(coach)/programs/${programId}/edit`);
+    router.push({
+      pathname: '/(coach)/(tabs)/programs/edit/[programId]',
+      params: { programId }
+    });
   };
 
   const handleDuplicateProgram = (programId: string) => {

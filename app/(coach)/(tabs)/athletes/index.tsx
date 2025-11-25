@@ -94,21 +94,27 @@ export default function AthletesPage() {
 
   const handleAthletePress = (athleteid: string) => {
     router.push({
-        pathname: '/(coach)/(tabs)/athletes/[athleteid]',
-        params: { athleteid }
+      pathname: '/(coach)/(tabs)/athletes/[athleteid]',
+      params: { athleteid }
     });
   };
 
   const handleAddAthlete = () => {
-    //router.push('/(coach)/athletes/invite');
+    router.push('/(coach)/(tabs)/athletes/invite');
   };
 
   const handleMessageAthlete = (athleteId: string) => {
-    //router.push(`/(coach)/messages?athleteId=${athleteId}`);
+    router.push({
+      pathname: '/(coach)/(tabs)/messages',
+      params: { athleteId }
+    });
   };
 
   const handleViewProgram = (athleteId: string) => {
-    //router.push(`/(coach)/athletes/${athleteId}/program`);
+    router.push({
+      pathname: '/(coach)/(tabs)/programs',
+      params: { athleteId }
+    });
   };
 
   return (

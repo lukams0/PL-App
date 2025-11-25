@@ -24,20 +24,6 @@ export default function CoachTabsLayout() {
       }}
     >
       <Tabs.Screen
-        name="profile"
-        options={{
-          title: 'Profile',
-          tabBarIcon: ({ color, size }) => <User size={size} color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="programs/index"
-        options={{
-          title: 'Programs',
-          tabBarIcon: ({ color, size }) => <BarChart3 size={size} color={color} />,
-        }}
-      />
-      <Tabs.Screen
         name="index"
         options={{
           title: 'Dashboard',
@@ -45,17 +31,31 @@ export default function CoachTabsLayout() {
         }}
       />
       <Tabs.Screen
-        name="athletes/index"
+        name="athletes"
         options={{
           title: 'Athletes',
           tabBarIcon: ({ color, size }) => <Users size={size} color={color} />,
         }}
       />
       <Tabs.Screen
-        name="messages/index"
+        name="programs"
+        options={{
+          title: 'Programs',
+          tabBarIcon: ({ color, size }) => <BarChart3 size={size} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="messages"
         options={{
           title: 'Messages',
           tabBarIcon: ({ color, size }) => <MessageSquare size={size} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: 'Profile',
+          tabBarIcon: ({ color, size }) => <User size={size} color={color} />,
         }}
       />
       <Tabs.Screen
@@ -67,17 +67,11 @@ export default function CoachTabsLayout() {
       <Tabs.Screen
         name="analytics"
         options={{
-          title: 'Test'
-        }}
-      />
-      <Tabs.Screen
-        name="programs/create"
-        options={{
           href: null
         }}
       />
       <Tabs.Screen
-        name="athletes/[athleteid]"
+        name="chat"
         options={{
           href: null
         }}
