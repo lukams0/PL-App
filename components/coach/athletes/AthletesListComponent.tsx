@@ -1,12 +1,12 @@
 import {
-    Calendar,
-    ChevronRight,
-    Mail,
-    Plus,
-    Search,
-    TrendingUp,
-    User,
-    UserPlus
+  Calendar,
+  ChevronRight,
+  Mail,
+  Plus,
+  Search,
+  TrendingUp,
+  User,
+  UserPlus
 } from 'lucide-react-native';
 import { Pressable, RefreshControl, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -76,12 +76,17 @@ export default function AthletesListComponent({
               pressStyle={{ backgroundColor: '#6d28d9' }}
               icon={UserPlus}
             >
-              Add
+              <Text color="white" fontWeight="600">Add</Text>
             </Button>
           </XStack>
 
-          {/* Search Bar */}
-          <XStack ai="center" gap="$2">
+          {/* Search Bar - Fixed: added paddingLeft to Input for icon space */}
+          <XStack ai="center" position="relative">
+            <Search 
+              size={20} 
+              color="#9ca3af" 
+              style={{ position: 'absolute', left: 12, zIndex: 1 }} 
+            />
             <Input
               f={1}
               size="$4"
@@ -91,8 +96,8 @@ export default function AthletesListComponent({
               backgroundColor="white"
               borderColor="#e5e7eb"
               focusStyle={{ borderColor: '#7c3aed' }}
+              pl="$8"
             />
-            <Search size={20} color="#9ca3af" style={{ position: 'absolute', left: 12 }} />
           </XStack>
 
           {/* Filter Buttons */}
@@ -106,7 +111,9 @@ export default function AthletesListComponent({
               onPress={() => setFilterStatus('all')}
               pressStyle={{ opacity: 0.8 }}
             >
-              All ({athletes.length})
+              <Text color={filterStatus === 'all' ? 'white' : '$gray11'}>
+                All ({athletes.length})
+              </Text>
             </Button>
             <Button
               size="$3"
@@ -117,7 +124,9 @@ export default function AthletesListComponent({
               onPress={() => setFilterStatus('active')}
               pressStyle={{ opacity: 0.8 }}
             >
-              Active
+              <Text color={filterStatus === 'active' ? 'white' : '$gray11'}>
+                Active
+              </Text>
             </Button>
             <Button
               size="$3"
@@ -128,7 +137,9 @@ export default function AthletesListComponent({
               onPress={() => setFilterStatus('inactive')}
               pressStyle={{ opacity: 0.8 }}
             >
-              Inactive
+              <Text color={filterStatus === 'inactive' ? 'white' : '$gray11'}>
+                Inactive
+              </Text>
             </Button>
           </XStack>
         </YStack>
@@ -163,20 +174,24 @@ export default function AthletesListComponent({
                       pressStyle={{ backgroundColor: '#6d28d9' }}
                       icon={Plus}
                     >
-                      Add Athlete
+                      <Text color="white" fontWeight="600">Add Athlete</Text>
                     </Button>
                   )}
                 </YStack>
               </Card>
             ) : (
               athletes.map((athlete) => (
-                <Pressable key={athlete.id} onPress={() => handleAthletePress(athlete.id)}>
+                <Pressable 
+                  key={athlete.id} 
+                  onPress={() => handleAthletePress(athlete.id)}
+                >
                   <Card
                     elevate
                     size="$4"
                     p="$4"
                     backgroundColor="white"
                     pressStyle={{ scale: 0.98 }}
+                    onPress={() => handleAthletePress(athlete.id)}
                   >
                     <YStack gap="$3">
                       {/* Athlete Header */}
@@ -208,7 +223,7 @@ export default function AthletesListComponent({
 
                       {/* Program Info */}
                       {athlete.currentProgram ? (
-                        <Card backgroundColor="#faf5ff" p="$3">
+                        <Card backgroundColor="#faf5ff" p="$3" borderRadius="$3">
                           <YStack gap="$2">
                             <Text fontSize="$3" fontWeight="600" color="$gray12">
                               {athlete.currentProgram}
@@ -217,20 +232,20 @@ export default function AthletesListComponent({
                               <XStack ai="center" gap="$1">
                                 <Calendar size={14} color="#7c3aed" />
                                 <Text fontSize="$2" color="#7c3aed">
-                                  Week {athlete.weekInProgram}/{athlete.totalWeeks}
+                                  {`Week ${athlete.weekInProgram}/${athlete.totalWeeks}`}
                                 </Text>
                               </XStack>
                               <XStack ai="center" gap="$1">
                                 <TrendingUp size={14} color={getComplianceColor(athlete.complianceRate)} />
                                 <Text fontSize="$2" color={getComplianceColor(athlete.complianceRate)}>
-                                  {athlete.complianceRate}% compliance
+                                  {`${athlete.complianceRate}% compliance`}
                                 </Text>
                               </XStack>
                             </XStack>
                           </YStack>
                         </Card>
                       ) : (
-                        <Card backgroundColor="#f9fafb" p="$3">
+                        <Card backgroundColor="#f9fafb" p="$3" borderRadius="$3">
                           <Text fontSize="$3" color="$gray10" textAlign="center">
                             No active program
                           </Text>
@@ -240,7 +255,7 @@ export default function AthletesListComponent({
                       {/* Actions and Info */}
                       <XStack ai="center" jc="space-between">
                         <Text fontSize="$2" color="$gray10">
-                          Last workout: {athlete.lastWorkout}
+                          {`Last workout: ${athlete.lastWorkout}`}
                         </Text>
                         <XStack gap="$2">
                           <Button

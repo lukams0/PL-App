@@ -1,6 +1,6 @@
 import AthletesListComponent from '@/components/coach/athletes/AthletesListComponent';
 import { router } from 'expo-router';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 // Fake athlete data
 const fakeAthletes = [
@@ -72,30 +72,32 @@ const fakeAthletes = [
 ];
 
 export default function AthletesPage() {
-  const [athletes, setAthletes] = useState(fakeAthletes);
+  const [athletes] = useState(fakeAthletes);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'inactive'>('all');
   const [refreshing, setRefreshing] = useState(false);
 
-  const filteredAthletes = athletes.filter(athlete => {
-    const matchesSearch = athlete.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          athlete.email.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesFilter = filterStatus === 'all' || athlete.status === filterStatus;
-    return matchesSearch && matchesFilter;
-  });
+  const filteredAthletes = useMemo(() => {
+    return athletes.filter(athlete => {
+      const matchesSearch = athlete.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                            athlete.email.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesFilter = filterStatus === 'all' || athlete.status === filterStatus;
+      return matchesSearch && matchesFilter;
+    });
+  }, [athletes, searchQuery, filterStatus]);
 
   const onRefresh = async () => {
     setRefreshing(true);
     // In real app, fetch athletes from service
-    setTimeout(() => {
-      setRefreshing(false);
-    }, 1000);
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    setRefreshing(false);
   };
 
-  const handleAthletePress = (athleteid: string) => {
+  const handleAthletePress = (athleteId: string) => {
+    console.log("test")
     router.push({
-      pathname: '/(coach)/(tabs)/athletes/[athleteid]',
-      params: { athleteid }
+      pathname: '/(coach)/(tabs)/athletes/[athleteId]',
+      params: { athleteId }
     });
   };
 

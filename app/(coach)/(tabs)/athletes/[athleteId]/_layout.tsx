@@ -1,6 +1,6 @@
 import { Stack } from 'expo-router';
 
-export default function AthletesLayout() {
+export default function AthleteDetailLayout() {
   return (
     <Stack
       screenOptions={{
@@ -11,20 +11,26 @@ export default function AthletesLayout() {
       <Stack.Screen
         name="index"
         options={{ 
-          title: 'Athletes',
-        }}
-      />
-      <Stack.Screen
-        name="[athleteId]"
-        options={{ 
           title: 'Athlete Details',
         }}
       />
       <Stack.Screen
-        name="invite"
+        name="history"
         options={{ 
-          title: 'Invite Athlete',
+          title: 'Workout History',
+        }}
+      />
+      <Stack.Screen
+        name="assign-program"
+        options={{ 
+          title: 'Assign Program',
           presentation: 'modal',
+        }}
+      />
+      <Stack.Screen
+        name="edit"
+        options={{ 
+          title: 'Edit Athlete',
         }}
       />
     </Stack>
