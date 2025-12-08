@@ -1,3 +1,4 @@
+// app/(coach)/_layout.tsx
 import { DrawerContentComponentProps, DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
 import { router, usePathname } from 'expo-router';
 import { Drawer } from 'expo-router/drawer';
@@ -43,7 +44,7 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
           activeTintColor="#7c3aed"
           inactiveTintColor="#6b7280"
           icon={({ color, size }) => <Home size={size} color={color} />}
-          focused={pathname?.includes('/(tabs)/') ?? false}
+          focused={pathname === '/(tabs)' || pathname === '/(coach)/(tabs)'}
         />
         <DrawerItem
           label="Athletes"
@@ -63,11 +64,11 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
         />
         <DrawerItem
           label="Messages"
-          onPress={() => router.push('/(coach)/(tabs)/messages')}
+          onPress={() => router.push('/(coach)/(tabs)/chat')}
           activeTintColor="#7c3aed"
           inactiveTintColor="#6b7280"
           icon={({ color, size }) => <MessageSquare size={size} color={color} />}
-          focused={pathname?.includes('/messages') ?? false}
+          focused={pathname?.includes('/chat') ?? false}
         />
         <DrawerItem
           label="Settings"

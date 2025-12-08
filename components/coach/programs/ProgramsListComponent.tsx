@@ -1,19 +1,15 @@
+// components/coach/programs/ProgramsListComponent.tsx
 import {
   Calendar,
   ChevronRight,
   Clock,
-  Copy,
-  Edit,
-  MoreVertical,
   Plus,
   Search,
-  Trash2,
   Users
 } from 'lucide-react-native';
-import { useState } from 'react';
-import { Pressable, RefreshControl, ScrollView } from 'react-native';
+import { Alert, Pressable, RefreshControl, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Button, Card, Input, Popover, Text, XStack, YStack } from 'tamagui';
+import { Button, Card, Input, Text, XStack, YStack } from 'tamagui';
 
 type Program = {
   id: string;
@@ -56,8 +52,6 @@ export default function ProgramsListComponent({
   handleDuplicateProgram,
   handleDeleteProgram,
 }: Props) {
-  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
-
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'active':
@@ -84,6 +78,46 @@ export default function ProgramsListComponent({
     }
   };
 
+  // Show action menu using Alert instead of Popover (avoids PortalProvider requirement)
+  const showProgramMenu = (program: Program) => {
+    Alert.alert(
+      program.name,
+      'What would you like to do?',
+      [
+        {
+          text: 'Edit Program',
+          onPress: () => handleEditProgram(program.id),
+        },
+        {
+          text: 'Duplicate',
+          onPress: () => handleDuplicateProgram(program.id),
+        },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: () => {
+            Alert.alert(
+              'Delete Program',
+              'Are you sure you want to delete this program? This cannot be undone.',
+              [
+                { text: 'Cancel', style: 'cancel' },
+                {
+                  text: 'Delete',
+                  style: 'destructive',
+                  onPress: () => handleDeleteProgram(program.id),
+                },
+              ]
+            );
+          },
+        },
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+      ]
+    );
+  };
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#f5f5f5' }} edges={['top']}>
       <YStack f={1} backgroundColor="#f5f5f5">
@@ -107,17 +141,20 @@ export default function ProgramsListComponent({
 
           {/* Search Bar */}
           <XStack ai="center" gap="$2">
-            <Input
-              f={1}
-              size="$4"
-              placeholder="Search programs..."
-              value={searchQuery}
-              onChangeText={setSearchQuery}
-              backgroundColor="white"
-              borderColor="#e5e7eb"
-              focusStyle={{ borderColor: '#7c3aed' }}
-            />
-            <Search size={20} color="#9ca3af" style={{ position: 'absolute', left: 12 }} />
+            <XStack f={1} position="relative">
+              <Input
+                f={1}
+                size="$4"
+                placeholder="Search programs..."
+                value={searchQuery}
+                onChangeText={setSearchQuery}
+                backgroundColor="white"
+                borderColor="#e5e7eb"
+                focusStyle={{ borderColor: '#7c3aed' }}
+                pl="$10"
+              />
+              <Search size={20} color="#9ca3af" style={{ position: 'absolute', left: 12, top: 12 }} />
+            </XStack>
           </XStack>
 
           {/* Filter Buttons */}
@@ -208,13 +245,18 @@ export default function ProgramsListComponent({
               </Card>
             ) : (
               programs.map((program) => (
-                <Pressable key={program.id} onPress={() => handleProgramPress(program.id)}>
+                <Pressable 
+                  key={program.id} 
+                  
+                >
                   <Card
                     elevate
                     size="$4"
                     p="$4"
                     backgroundColor="white"
                     pressStyle={{ scale: 0.98 }}
+                    onPress={() => handleProgramPress(program.id)}
+                    onLongPress={() => showProgramMenu(program)}
                   >
                     <YStack gap="$3">
                       {/* Program Header */}
@@ -239,82 +281,6 @@ export default function ProgramsListComponent({
                             {program.description}
                           </Text>
                         </YStack>
-                        
-                        {/* Menu */}
-                        <Popover
-                          open={openMenuId === program.id}
-                          onOpenChange={(open) => setOpenMenuId(open ? program.id : null)}
-                        >
-                          <Popover.Trigger asChild>
-                            <Button
-                              size="$2"
-                              chromeless
-                              onPress={(e) => {
-                                e.stopPropagation();
-                                setOpenMenuId(openMenuId === program.id ? null : program.id);
-                              }}
-                              pressStyle={{ opacity: 0.7 }}
-                            >
-                              <MoreVertical size={20} color="#6b7280" />
-                            </Button>
-                          </Popover.Trigger>
-                          
-                          <Popover.Content
-                            borderWidth={1}
-                            borderColor="$borderColor"
-                            enterStyle={{ y: -10, opacity: 0 }}
-                            exitStyle={{ y: -10, opacity: 0 }}
-                            elevate
-                            animation={[
-                              'quick',
-                              {
-                                opacity: {
-                                  overshootClamping: true,
-                                },
-                              },
-                            ]}
-                          >
-                            <YStack gap="$0">
-                              <Button
-                                size="$3"
-                                chromeless
-                                jc="flex-start"
-                                onPress={() => {
-                                  setOpenMenuId(null);
-                                  handleEditProgram(program.id);
-                                }}
-                                icon={Edit}
-                              >
-                                Edit Program
-                              </Button>
-                              <Button
-                                size="$3"
-                                chromeless
-                                jc="flex-start"
-                                onPress={() => {
-                                  setOpenMenuId(null);
-                                  handleDuplicateProgram(program.id);
-                                }}
-                                icon={Copy}
-                              >
-                                Duplicate
-                              </Button>
-                              <Button
-                                size="$3"
-                                chromeless
-                                jc="flex-start"
-                                onPress={() => {
-                                  setOpenMenuId(null);
-                                  handleDeleteProgram(program.id);
-                                }}
-                                icon={Trash2}
-                                color="$red10"
-                              >
-                                Delete
-                              </Button>
-                            </YStack>
-                          </Popover.Content>
-                        </Popover>
                       </XStack>
 
                       {/* Program Info */}
@@ -359,7 +325,10 @@ export default function ProgramsListComponent({
                       )}
 
                       {/* View Details */}
-                      <XStack ai="center" jc="flex-end">
+                      <XStack ai="center" jc="space-between">
+                        <Text fontSize="$2" color="$gray10">
+                          Long press for options
+                        </Text>
                         <XStack ai="center" gap="$1">
                           <Text fontSize="$3" color="#7c3aed" fontWeight="600">
                             View Details

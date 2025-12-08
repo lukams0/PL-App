@@ -1,17 +1,19 @@
+// components/coach/dashboard/DashboardComponent.tsx
 import { CoachProfile } from '@/types/datebase.types';
 import {
-    Award,
-    BarChart3,
-    Calendar,
-    ChevronRight,
-    MessageSquare,
-    Plus,
-    TrendingUp,
-    Users
+  Award,
+  BarChart3,
+  Calendar,
+  ChevronRight,
+  MessageSquare,
+  PieChart,
+  Plus,
+  TrendingUp,
+  Users
 } from 'lucide-react-native';
-import { RefreshControl, ScrollView } from 'react-native';
+import { Pressable, RefreshControl, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Button, Card, Text, XStack, YStack } from 'tamagui';
+import { Card, Text, XStack, YStack } from 'tamagui';
 
 type RecentActivity = {
   id: string;
@@ -49,6 +51,7 @@ type Props = {
   handleViewAthletes: () => void;
   handleViewPrograms: () => void;
   handleViewMessages: () => void;
+  handleViewAnalytics: () => void;
   handleCreateProgram: () => void;
 };
 
@@ -63,6 +66,7 @@ export default function CoachDashboardComponent({
   handleViewAthletes,
   handleViewPrograms,
   handleViewMessages,
+  handleViewAnalytics,
   handleCreateProgram,
 }: Props) {
   const getActivityIcon = (type: string) => {
@@ -99,11 +103,124 @@ export default function CoachDashboardComponent({
               </Text>
             </YStack>
 
-            {/* Stats Overview */}
+            {/* Quick Actions */}
             <YStack gap="$3">
               <Text fontSize="$5" fontWeight="bold" color="$gray12">
-                Overview
+                Quick Actions
               </Text>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                <XStack gap="$3">
+                  <Pressable>
+                    <Card
+                      elevate
+                      size="$4"
+                      p="$3"
+                      backgroundColor="#7c3aed"
+                      w={120}
+                      pressStyle={{ scale: 0.95 }}
+                      onPress={handleCreateProgram}
+                    >
+                      <YStack ai="center" gap="$2">
+                        <Plus size={24} color="white" />
+                        <Text fontSize="$2" fontWeight="600" color="white" textAlign="center">
+                          New Program
+                        </Text>
+                      </YStack>
+                    </Card>
+                  </Pressable>
+                  
+                  <Pressable>
+                    <Card
+                      elevate
+                      size="$4"
+                      p="$3"
+                      backgroundColor="white"
+                      w={120}
+                      pressStyle={{ scale: 0.95 }}
+                      onPress={handleViewAnalytics}
+                    >
+                      <YStack ai="center" gap="$2">
+                        <PieChart size={24} color="#7c3aed" />
+                        <Text fontSize="$2" fontWeight="600" color="$gray12" textAlign="center">
+                          Analytics
+                        </Text>
+                      </YStack>
+                    </Card>
+                  </Pressable>
+
+                  <Pressable>
+                    <Card
+                      elevate
+                      size="$4"
+                      p="$3"
+                      backgroundColor="white"
+                      w={120}
+                      pressStyle={{ scale: 0.95 }}
+                      onPress={handleViewMessages}
+                    >
+                      <YStack ai="center" gap="$2" position="relative">
+                        <MessageSquare size={24} color="#7c3aed" />
+                        {stats.messagesUnread > 0 && (
+                          <XStack
+                            position="absolute"
+                            top={-4}
+                            right={20}
+                            backgroundColor="#ef4444"
+                            borderRadius="$10"
+                            w={18}
+                            h={18}
+                            ai="center"
+                            jc="center"
+                          >
+                            <Text fontSize={10} fontWeight="bold" color="white">
+                              {stats.messagesUnread}
+                            </Text>
+                          </XStack>
+                        )}
+                        <Text fontSize="$2" fontWeight="600" color="$gray12" textAlign="center">
+                          Messages
+                        </Text>
+                      </YStack>
+                    </Card>
+                  </Pressable>
+
+                  <Pressable>
+                    <Card
+                      elevate
+                      size="$4"
+                      p="$3"
+                      backgroundColor="white"
+                      w={120}
+                      pressStyle={{ scale: 0.95 }}
+                      onPress={handleViewAthletes}
+                    >
+                      <YStack ai="center" gap="$2">
+                        <Users size={24} color="#7c3aed" />
+                        <Text fontSize="$2" fontWeight="600" color="$gray12" textAlign="center">
+                          Athletes
+                        </Text>
+                      </YStack>
+                    </Card>
+                  </Pressable>
+                </XStack>
+              </ScrollView>
+            </YStack>
+
+            {/* Stats Overview */}
+            <YStack gap="$3">
+              <XStack ai="center" jc="space-between">
+                <Text fontSize="$5" fontWeight="bold" color="$gray12">
+                  Overview
+                </Text>
+                <Pressable onPress={handleViewAnalytics}>
+                  <XStack ai="center" gap="$1">
+                    <Text fontSize="$3" color="#7c3aed" fontWeight="600">
+                      View Analytics
+                    </Text>
+                    <ChevronRight size={16} color="#7c3aed" />
+                  </XStack>
+                </Pressable>
+              </XStack>
               <XStack gap="$3" flexWrap="wrap">
                 <Card 
                   elevate 
@@ -143,12 +260,12 @@ export default function CoachDashboardComponent({
                     <Text fontSize="$7" fontWeight="bold" color="$gray12">
                       {stats.activePrograms}
                     </Text>
-                    <Text fontSize="$2" color="$gray10">Active</Text>
+                    <Text fontSize="$2" color="$gray10">
+                      Active
+                    </Text>
                   </YStack>
                 </Card>
-              </XStack>
 
-              <XStack gap="$3" flexWrap="wrap">
                 <Card 
                   elevate 
                   size="$4" 
@@ -159,127 +276,81 @@ export default function CoachDashboardComponent({
                 >
                   <YStack gap="$2">
                     <XStack ai="center" gap="$2">
-                      <TrendingUp size={20} color="#7c3aed" />
+                      <Calendar size={20} color="#7c3aed" />
+                      <Text fontSize="$3" color="$gray10">Workouts</Text>
+                    </XStack>
+                    <Text fontSize="$7" fontWeight="bold" color="$gray12">
+                      {stats.completedWorkouts}
+                    </Text>
+                    <Text fontSize="$2" color="$gray10">
+                      This week
+                    </Text>
+                  </YStack>
+                </Card>
+
+                <Card 
+                  elevate 
+                  size="$4" 
+                  p="$3" 
+                  backgroundColor="white"
+                  f={1}
+                  minWidth={150}
+                >
+                  <YStack gap="$2">
+                    <XStack ai="center" gap="$2">
+                      <TrendingUp size={20} color="#10b981" />
                       <Text fontSize="$3" color="$gray10">Compliance</Text>
                     </XStack>
-                    <Text fontSize="$7" fontWeight="bold" color="$gray12">
+                    <Text fontSize="$7" fontWeight="bold" color="#10b981">
                       {stats.averageComplianceRate}%
                     </Text>
-                    <Text fontSize="$2" color="$gray10">Average rate</Text>
-                  </YStack>
-                </Card>
-
-                <Card 
-                  elevate 
-                  size="$4" 
-                  p="$3" 
-                  backgroundColor="white"
-                  f={1}
-                  minWidth={150}
-                >
-                  <YStack gap="$2">
-                    <XStack ai="center" gap="$2">
-                      <MessageSquare size={20} color="#7c3aed" />
-                      <Text fontSize="$3" color="$gray10">Messages</Text>
-                    </XStack>
-                    <Text fontSize="$7" fontWeight="bold" color="$gray12">
-                      {stats.messagesUnread}
+                    <Text fontSize="$2" color="$gray10">
+                      Average
                     </Text>
-                    <Text fontSize="$2" color="#ef4444">Unread</Text>
                   </YStack>
                 </Card>
-              </XStack>
-            </YStack>
-
-            {/* Quick Actions */}
-            <YStack gap="$3">
-              <Text fontSize="$5" fontWeight="bold" color="$gray12">
-                Quick Actions
-              </Text>
-              <XStack gap="$3" flexWrap="wrap">
-                <Button
-                  size="$4"
-                  backgroundColor="#7c3aed"
-                  color="white"
-                  onPress={handleCreateProgram}
-                  f={1}
-                  minWidth={150}
-                  pressStyle={{ backgroundColor: '#6d28d9' }}
-                >
-                  <XStack ai="center" gap="$2">
-                    <Plus size={20} color="white" />
-                    <Text color="white" fontWeight="600">New Program</Text>
-                  </XStack>
-                </Button>
-                <Button
-                  size="$4"
-                  backgroundColor="white"
-                  borderWidth={1}
-                  borderColor="#e5e7eb"
-                  onPress={handleViewAthletes}
-                  f={1}
-                  minWidth={150}
-                  pressStyle={{ backgroundColor: '#f9fafb' }}
-                >
-                  <XStack ai="center" gap="$2">
-                    <Users size={20} color="#7c3aed" />
-                    <Text color="$gray12" fontWeight="600">View Athletes</Text>
-                  </XStack>
-                </Button>
               </XStack>
             </YStack>
 
             {/* Recent Activity */}
             <YStack gap="$3">
-              <XStack ai="center" jc="space-between">
-                <Text fontSize="$5" fontWeight="bold" color="$gray12">
-                  Recent Activity
-                </Text>
-                <Button
-                  size="$2"
-                  chromeless
-                  color="$gray10"
-                  onPress={() => {}}
-                  pressStyle={{ opacity: 0.7 }}
-                >
-                  <Text fontSize="$3" color="#7c3aed">View All</Text>
-                </Button>
-              </XStack>
-              
-              <Card elevate size="$4" p="$4" backgroundColor="white">
+              <Text fontSize="$5" fontWeight="bold" color="$gray12">
+                Recent Activity
+              </Text>
+              <Card elevate size="$4" p="$3" backgroundColor="white">
                 <YStack gap="$3">
-                  {recentActivities.map((activity, index) => (
-                    <XStack
-                      key={activity.id}
-                      ai="center"
-                      gap="$3"
-                      pb="$3"
-                      borderBottomWidth={index < recentActivities.length - 1 ? 1 : 0}
-                      borderBottomColor="$gray5"
-                    >
-                      <YStack
-                        w={32}
-                        h={32}
-                        borderRadius="$10"
-                        backgroundColor="#faf5ff"
-                        ai="center"
-                        jc="center"
-                      >
-                        {getActivityIcon(activity.type)}
+                  {recentActivities.length === 0 ? (
+                    <Text fontSize="$3" color="$gray10" textAlign="center" py="$3">
+                      No recent activity
+                    </Text>
+                  ) : (
+                    recentActivities.map((activity, index) => (
+                      <YStack key={activity.id}>
+                        <XStack ai="flex-start" gap="$3">
+                          <YStack pt="$1">
+                            {getActivityIcon(activity.type)}
+                          </YStack>
+                          <YStack f={1} gap="$0.5">
+                            <Text fontSize="$3" fontWeight="600" color="$gray12">
+                              {activity.athleteName}
+                            </Text>
+                            <Text fontSize="$2" color="$gray11">
+                              {activity.activity}
+                            </Text>
+                            <Text fontSize="$2" color="$gray10">
+                              {activity.programName}
+                            </Text>
+                          </YStack>
+                          <Text fontSize="$2" color="$gray10">
+                            {activity.time}
+                          </Text>
+                        </XStack>
+                        {index < recentActivities.length - 1 && (
+                          <YStack h={1} backgroundColor="$gray3" my="$2" />
+                        )}
                       </YStack>
-                      <YStack f={1} gap="$1">
-                        <Text fontSize="$3" fontWeight="600" color="$gray12">
-                          {activity.athleteName}
-                        </Text>
-                        <Text fontSize="$2" color="$gray10">
-                          {activity.activity}: {activity.programName}
-                        </Text>
-                      </YStack>
-                      <Text fontSize="$2" color="$gray10">
-                        {activity.time}
-                      </Text>
-                    </XStack>
-                  ))}
+                    ))
+                  )}
                 </YStack>
               </Card>
             </YStack>
@@ -288,55 +359,55 @@ export default function CoachDashboardComponent({
             <YStack gap="$3">
               <XStack ai="center" jc="space-between">
                 <Text fontSize="$5" fontWeight="bold" color="$gray12">
-                  Active Programs
+                  Athlete Progress
                 </Text>
-                <Button
-                  size="$2"
-                  chromeless
-                  color="$gray10"
-                  onPress={handleViewPrograms}
-                  pressStyle={{ opacity: 0.7 }}
-                >
+                <Pressable onPress={handleViewPrograms}>
                   <XStack ai="center" gap="$1">
-                    <Text fontSize="$3" color="#7c3aed">See All</Text>
+                    <Text fontSize="$3" color="#7c3aed" fontWeight="600">
+                      View All
+                    </Text>
                     <ChevronRight size={16} color="#7c3aed" />
                   </XStack>
-                </Button>
+                </Pressable>
               </XStack>
-              
-              {upcomingPrograms.map((program) => (
-                <Card 
-                  key={program.id}
-                  elevate 
-                  size="$4" 
-                  p="$4" 
-                  backgroundColor="white"
-                  pressStyle={{ scale: 0.98 }}
-                >
-                  <XStack ai="center" jc="space-between">
-                    <YStack f={1} gap="$1">
-                      <Text fontSize="$4" fontWeight="600" color="$gray12">
-                        {program.athleteName}
-                      </Text>
-                      <Text fontSize="$3" color="$gray10">
-                        {program.programName}
-                      </Text>
-                      <XStack ai="center" gap="$2" mt="$1">
-                        <Text fontSize="$2" color="#7c3aed">
-                          Week {program.week}/{program.totalWeeks}
-                        </Text>
-                        <Text fontSize="$2" color="$gray10">
-                          • Next: {program.nextWorkout}
-                        </Text>
+              <YStack gap="$2">
+                {upcomingPrograms.length === 0 ? (
+                  <Card elevate size="$4" p="$4" backgroundColor="white">
+                    <Text fontSize="$3" color="$gray10" textAlign="center">
+                      No active programs
+                    </Text>
+                  </Card>
+                ) : (
+                  upcomingPrograms.map((program) => (
+                    <Card key={program.id} elevate size="$4" p="$3" backgroundColor="white">
+                      <XStack ai="center" jc="space-between">
+                        <YStack f={1} gap="$1">
+                          <Text fontSize="$3" fontWeight="600" color="$gray12">
+                            {program.athleteName}
+                          </Text>
+                          <Text fontSize="$2" color="$gray11">
+                            {program.programName}
+                          </Text>
+                          <Text fontSize="$2" color="$gray10">
+                            Week {program.week} of {program.totalWeeks}
+                          </Text>
+                        </YStack>
+                        <YStack ai="flex-end" gap="$1">
+                          <Text fontSize="$2" color="#7c3aed" fontWeight="600">
+                            {program.nextWorkout}
+                          </Text>
+                          <Text fontSize="$2" color="$gray10">
+                            {Math.round((program.week / program.totalWeeks) * 100)}% complete
+                          </Text>
+                        </YStack>
                       </XStack>
-                    </YStack>
-                    <ChevronRight size={20} color="#9ca3af" />
-                  </XStack>
-                </Card>
-              ))}
+                    </Card>
+                  ))
+                )}
+              </YStack>
             </YStack>
 
-            {/* Bottom Spacing */}
+            {/* Bottom spacing */}
             <YStack h={20} />
           </YStack>
         </ScrollView>

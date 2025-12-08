@@ -1,3 +1,4 @@
+// app/(coach)/(tabs)/index.tsx
 import CoachDashboardComponent from '@/components/coach/dashboard/DashboardComponent';
 import { CoachProfile } from '@/types/datebase.types';
 import { router } from 'expo-router';
@@ -111,7 +112,11 @@ export default function CoachDashboard() {
   };
 
   const handleViewMessages = () => {
-    router.push('/(coach)/(tabs)/messages');
+    router.push('/(coach)/(tabs)/chat');
+  };
+
+  const handleViewAnalytics = () => {
+    router.push('/(coach)/(tabs)/analytics');
   };
 
   const handleCreateProgram = () => {
@@ -130,6 +135,7 @@ export default function CoachDashboard() {
       handleViewAthletes={handleViewAthletes}
       handleViewPrograms={handleViewPrograms}
       handleViewMessages={handleViewMessages}
+      handleViewAnalytics={handleViewAnalytics}
       handleCreateProgram={handleCreateProgram}
     />
   );

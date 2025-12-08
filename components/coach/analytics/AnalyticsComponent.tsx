@@ -1,5 +1,6 @@
-import { Award, BarChart3, Clock, TrendingUp, Weight } from "lucide-react-native";
-import { ScrollView } from "react-native";
+// components/coach/analytics/AnalyticsComponent.tsx
+import { Award, BarChart3, ChevronRight, Clock, TrendingUp, Weight } from "lucide-react-native";
+import { Pressable, RefreshControl, ScrollView } from "react-native";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Avatar, Button, Card, Progress, Separator, Text, XStack, YStack } from "tamagui";
 
@@ -7,9 +8,27 @@ interface Props {
   dateRange: 'week' | 'month' | 'year';
   setDateRange: (range: 'week' | 'month' | 'year') => void;
   analyticsData: any;
+  refreshing?: boolean;
+  onRefresh?: () => Promise<void>;
+  onAthletePress?: (athleteId: string) => void;
+  onProgramPress?: (programId: string) => void;
 }
 
-export default function AnalyticsComponent({ dateRange, setDateRange, analyticsData }: Props) {
+export default function AnalyticsComponent({ 
+  dateRange, 
+  setDateRange, 
+  analyticsData,
+  refreshing = false,
+  onRefresh,
+  onAthletePress,
+  onProgramPress,
+}: Props) {
+  // Helper function to safely round progress values (prevents Fabric precision errors)
+  const safeRound = (value: number | undefined | null): number => {
+    if (value === undefined || value === null || isNaN(value)) return 0;
+    return Math.min(100, Math.max(0, Math.round(value)));
+  };
+
   const getEngagementColor = (level: string) => {
     switch (level) {
       case 'highly_engaged': return '#10b981';
@@ -19,15 +38,26 @@ export default function AnalyticsComponent({ dateRange, setDateRange, analyticsD
     }
   };
 
+  const handleRefresh = async () => {
+    if (onRefresh) {
+      await onRefresh();
+    }
+  };
+
   return (
-    <SafeAreaView style={{ flex: 1 }} edges={['top', 'left', 'right']}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#f5f5f5' }} edges={['top']}>
       <ScrollView
         contentContainerStyle={{
           paddingHorizontal: 16,
           paddingTop: 16,
-          paddingBottom: 20,
+          paddingBottom: 32,
           gap: 16,
         }}
+        refreshControl={
+          onRefresh ? (
+            <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+          ) : undefined
+        }
       >
         {/* Header */}
         <YStack gap="$1">
@@ -50,6 +80,7 @@ export default function AnalyticsComponent({ dateRange, setDateRange, analyticsD
               borderColor={dateRange === range ? '#7c3aed' : '$gray4'}
               borderWidth={1}
               onPress={() => setDateRange(range)}
+              pressStyle={{ opacity: 0.8 }}
             >
               <Text
                 color={dateRange === range ? 'white' : '$gray11'}
@@ -110,7 +141,7 @@ export default function AnalyticsComponent({ dateRange, setDateRange, analyticsD
                 <TrendingUp size={20} color="#10b981" />
                 <Text fontSize="$2" color="$gray11">Compliance</Text>
               </XStack>
-              <Text fontSize={24} fontWeight="bold" color="$gray12">
+              <Text fontSize={24} fontWeight="bold" color="#10b981">
                 {analyticsData.stats.avgComplianceRate}%
               </Text>
               <Text fontSize="$2" color="$gray10">Average</Text>
@@ -126,9 +157,10 @@ export default function AnalyticsComponent({ dateRange, setDateRange, analyticsD
             </Text>
             <YStack gap="$2">
               {analyticsData.workoutCompletion.map((day: any) => {
-                const rawPercent =
-                  day.scheduled > 0 ? (day.completed / day.scheduled) * 100 : 0;
-                const completionPercent = Math.round(rawPercent);
+                const rawPercent = day.scheduled > 0 
+                  ? (day.completed / day.scheduled) * 100 
+                  : 0;
+                const completionPercent = safeRound(rawPercent);
 
                 return (
                   <XStack key={day.day} ai="center" gap="$3">
@@ -154,7 +186,6 @@ export default function AnalyticsComponent({ dateRange, setDateRange, analyticsD
                   </XStack>
                 );
               })}
-
             </YStack>
           </YStack>
         </Card>
@@ -162,40 +193,56 @@ export default function AnalyticsComponent({ dateRange, setDateRange, analyticsD
         {/* Program Progress */}
         <Card elevate size="$4" p="$4" backgroundColor="white">
           <YStack gap="$3">
-            <Text fontSize="$5" fontWeight="600" color="$gray12">
-              Program Progress
-            </Text>
+            <XStack ai="center" jc="space-between">
+              <Text fontSize="$5" fontWeight="600" color="$gray12">
+                Program Progress
+              </Text>
+              {onProgramPress && (
+                <Pressable onPress={() => onProgramPress('all')}>
+                  <XStack ai="center" gap="$1">
+                    <Text fontSize="$2" color="#7c3aed" fontWeight="600">
+                      View All
+                    </Text>
+                    <ChevronRight size={14} color="#7c3aed" />
+                  </XStack>
+                </Pressable>
+              )}
+            </XStack>
             <YStack gap="$3">
               {analyticsData.programProgress.map((program: any) => {
-                const progressPercent = Math.round(program.avgProgress ?? 0);
+                const progressPercent = safeRound(program.avgProgress);
 
                 return (
-                  <YStack key={program.name} gap="$2">
-                    <XStack ai="center" jc="space-between">
-                      <YStack gap="$0.5">
-                        <Text fontSize="$3" fontWeight="600" color="$gray12">
-                          {program.name}
+                  <Pressable 
+                    key={program.name}
+                    onPress={() => onProgramPress && onProgramPress(program.id || program.name)}
+                  >
+                    <YStack gap="$2">
+                      <XStack ai="center" jc="space-between">
+                        <YStack gap="$0.5">
+                          <Text fontSize="$3" fontWeight="600" color="$gray12">
+                            {program.name}
+                          </Text>
+                          <Text fontSize="$2" color="$gray11">
+                            {program.athletes} athletes
+                          </Text>
+                        </YStack>
+                        <Text fontSize="$3" fontWeight="600" color="#7c3aed">
+                          {progressPercent}%
                         </Text>
-                        <Text fontSize="$2" color="$gray11">
-                          {program.athletes} athletes
-                        </Text>
-                      </YStack>
-                      <Text fontSize="$3" fontWeight="600" color="#7c3aed">
-                        {progressPercent}%
-                      </Text>
-                    </XStack>
-                    <Progress
-                      value={progressPercent}
-                      max={100}
-                      backgroundColor="$gray3"
-                      h={8}
-                    >
-                      <Progress.Indicator backgroundColor="#7c3aed" />
-                    </Progress>
-                  </YStack>
+                      </XStack>
+                      <Progress
+                        value={progressPercent}
+                        max={100}
+                        backgroundColor="$gray3"
+                        h={8}
+                      >
+                        <Progress.Indicator backgroundColor="#7c3aed" />
+                      </Progress>
+                    </YStack>
+                  </Pressable>
                 );
               })}
-
             </YStack>
           </YStack>
         </Card>
@@ -259,6 +306,15 @@ export default function AnalyticsComponent({ dateRange, setDateRange, analyticsD
                 </Text>
               </YStack>
             </XStack>
+            
+            {/* Engagement Summary */}
+            <YStack backgroundColor="$gray2" p="$3" borderRadius="$3" mt="$2">
+              <Text fontSize="$2" color="$gray11" textAlign="center">
+                {analyticsData.athleteEngagement.highly_engaged + 
+                 analyticsData.athleteEngagement.moderately_engaged + 
+                 analyticsData.athleteEngagement.low_engagement} total athletes tracked
+              </Text>
+            </YStack>
           </YStack>
         </Card>
 
@@ -273,30 +329,47 @@ export default function AnalyticsComponent({ dateRange, setDateRange, analyticsD
             </XStack>
             <YStack gap="$3">
               {analyticsData.topPerformers.map((athlete: any, index: number) => (
-                <XStack key={athlete.name} ai="center" gap="$3">
-                  <Text fontSize="$3" fontWeight="600" color="$gray11" width={20}>
-                    #{index + 1}
-                  </Text>
-                  <Avatar circular size="$3">
-                    <Avatar.Fallback backgroundColor="$gray5">
-                      {athlete.name.split(' ').map((n: string) => n[0]).join('')}
-                    </Avatar.Fallback>
-                  </Avatar>
-                  <YStack f={1} gap="$0.5">
-                    <Text fontSize="$3" fontWeight="600" color="$gray12">
-                      {athlete.name}
-                    </Text>
-                    <XStack gap="$2">
-                      <Text fontSize="$2" color="$gray11">
-                        {athlete.compliance}% compliance
+                <Pressable 
+                  key={athlete.name}
+                  onPress={() => onAthletePress && onAthletePress(athlete.id || athlete.name)}
+                >
+                  <XStack ai="center" gap="$3">
+                    <YStack 
+                      w={24} 
+                      h={24} 
+                      borderRadius="$10" 
+                      backgroundColor={index === 0 ? '#fbbf24' : index === 1 ? '#9ca3af' : '#cd7c32'}
+                      ai="center"
+                      jc="center"
+                    >
+                      <Text fontSize="$2" fontWeight="bold" color="white">
+                        {index + 1}
                       </Text>
-                      <Text fontSize="$2" color="$gray11">•</Text>
-                      <Text fontSize="$2" color="$gray11">
-                        {athlete.prs} PRs
+                    </YStack>
+                    <Avatar circular size="$3">
+                      <Avatar.Fallback backgroundColor="$gray5">
+                        <Text color="$gray11" fontWeight="600" fontSize="$2">
+                          {athlete.name.split(' ').map((n: string) => n[0]).join('')}
+                        </Text>
+                      </Avatar.Fallback>
+                    </Avatar>
+                    <YStack f={1} gap="$0.5">
+                      <Text fontSize="$3" fontWeight="600" color="$gray12">
+                        {athlete.name}
                       </Text>
-                    </XStack>
-                  </YStack>
-                </XStack>
+                      <XStack gap="$2">
+                        <Text fontSize="$2" color="$gray11">
+                          {athlete.compliance}% compliance
+                        </Text>
+                        <Text fontSize="$2" color="$gray11">•</Text>
+                        <Text fontSize="$2" color="#f59e0b" fontWeight="600">
+                          {athlete.prs} PRs
+                        </Text>
+                      </XStack>
+                    </YStack>
+                    <ChevronRight size={16} color="$gray8" />
+                  </XStack>
+                </Pressable>
               ))}
             </YStack>
           </YStack>
@@ -305,25 +378,39 @@ export default function AnalyticsComponent({ dateRange, setDateRange, analyticsD
         {/* Recent PRs */}
         <Card elevate size="$4" p="$4" backgroundColor="white">
           <YStack gap="$3">
-            <Text fontSize="$5" fontWeight="600" color="$gray12">
-              Recent Personal Records
-            </Text>
+            <XStack ai="center" jc="space-between">
+              <Text fontSize="$5" fontWeight="600" color="$gray12">
+                Recent Personal Records
+              </Text>
+              <XStack backgroundColor="#fef3c7" px="$2" py="$1" borderRadius="$2">
+                <Text fontSize="$2" color="#f59e0b" fontWeight="600">
+                  🏆 {analyticsData.recentPRs.length} this {dateRange}
+                </Text>
+              </XStack>
+            </XStack>
             <YStack gap="$3">
               {analyticsData.recentPRs.map((pr: any, index: number) => (
                 <YStack key={index}>
-                  <XStack ai="center" jc="space-between">
-                    <YStack gap="$0.5">
-                      <Text fontSize="$3" fontWeight="600" color="$gray12">
-                        {pr.athlete}
+                  <Pressable onPress={() => onAthletePress && onAthletePress(pr.athleteId || pr.athlete)}>
+                    <XStack ai="center" jc="space-between">
+                      <YStack gap="$0.5">
+                        <Text fontSize="$3" fontWeight="600" color="$gray12">
+                          {pr.athlete}
+                        </Text>
+                        <XStack ai="center" gap="$2">
+                          <Text fontSize="$2" color="#7c3aed" fontWeight="600">
+                            {pr.exercise}
+                          </Text>
+                          <Text fontSize="$2" color="$gray11">
+                            {pr.weight} × {pr.reps}
+                          </Text>
+                        </XStack>
+                      </YStack>
+                      <Text fontSize="$2" color="$gray10">
+                        {pr.date}
                       </Text>
-                      <Text fontSize="$2" color="$gray11">
-                        {pr.exercise}: {pr.weight} × {pr.reps}
-                      </Text>
-                    </YStack>
-                    <Text fontSize="$2" color="$gray10">
-                      {pr.date}
-                    </Text>
-                  </XStack>
+                    </XStack>
+                  </Pressable>
                   {index < analyticsData.recentPRs.length - 1 && <Separator my="$2" />}
                 </YStack>
               ))}

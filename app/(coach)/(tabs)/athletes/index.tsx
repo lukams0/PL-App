@@ -107,7 +107,7 @@ export default function AthletesPage() {
 
   const handleMessageAthlete = (athleteId: string) => {
     router.push({
-      pathname: '/(coach)/(tabs)/messages',
+      pathname: '/(coach)/(tabs)/chat',
       params: { athleteId }
     });
   };

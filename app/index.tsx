@@ -5,7 +5,7 @@ import { useEffect } from "react";
 
 export default function Index() {
 
-  const { user, loading, onboardingComplete, hasCompletedOnboarding } = useAuth();
+  const { user, profile, loading, onboardingComplete, hasCompletedOnboarding } = useAuth();
 
   useEffect(() => {
     if (user && onboardingComplete === null) {
@@ -28,7 +28,11 @@ export default function Index() {
   if(onboardingComplete === false) {
     return <Redirect href="/(auth)/onboarding"/>;
   }
-  // User and profile exist - go to athlete home
-  console.log('Index: User and profile exist, redirecting to athlete home');
+  if(profile?.role === "coach") {
+    return <Redirect href="/(coach)/(tabs)" />;
+  } else {
+    console.log('Index: User and profile exist, redirecting to athlete home');
   return <Redirect href="/(athlete)/(tabs)" />;
+  }
+  
 }

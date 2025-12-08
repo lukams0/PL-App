@@ -1,3 +1,4 @@
+// app/(coach)/(tabs)/athletes/[athleteId]/index.tsx
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import {
   Activity,
@@ -9,7 +10,6 @@ import {
   Dumbbell,
   Edit,
   MessageCircle,
-  Target,
   Trash2,
   User
 } from 'lucide-react-native';
@@ -146,15 +146,17 @@ export default function AthleteDetailPage() {
 
   const handleMessage = () => {
     router.push({
-      pathname: '/(coach)/(tabs)/messages',
+      pathname: '/(coach)/(tabs)/chat',
       params: { athleteId: athlete?.id }
     });
   };
 
+  // FIX: Use absolute path with dynamic segment for history navigation
   const handleViewHistory = () => {
+    if (!athleteId) return;
     router.push({
-      pathname: './history',
-      params: { athleteId: athlete?.id }
+      pathname: '/(coach)/(tabs)/athletes/[athleteId]/history',
+      params: { athleteId: athleteId }
     });
   };
 
@@ -168,17 +170,19 @@ export default function AthleteDetailPage() {
   };
 
   const handleAssignProgram = () => {
+    if (!athleteId) return;
     router.push({
-      pathname: './assign-program',
-      params: { athleteId: athlete?.id }
+      pathname: '/(coach)/(tabs)/athletes/[athleteId]/assign-program',
+      params: { athleteId: athleteId }
     });
   };
 
+  // FIX: Use absolute path with dynamic segment for edit navigation
   const handleEditAthlete = () => {
-    if (!athlete) return;
+    if (!athlete || !athleteId) return;
     router.push({
       pathname: '/(coach)/(tabs)/athletes/[athleteId]/edit',
-      params: { athleteId: athlete.id },
+      params: { athleteId: athleteId }
     });
   };
 
@@ -417,18 +421,16 @@ export default function AthleteDetailPage() {
                 ai="center"
                 jc="center"
               >
-                <Calendar size={30} color="#7c3aed" />
+                <Calendar size={28} color="#7c3aed" />
               </YStack>
-              <YStack ai="center" gap="$1">
-                <Text fontSize="$4" fontWeight="600" color="$gray12">
-                  No Active Program
-                </Text>
-                <Text fontSize="$3" color="$gray10" textAlign="center">
-                  Assign a program to this athlete to get started
-                </Text>
-              </YStack>
+              <Text fontSize="$4" fontWeight="600" color="$gray12">
+                No Program Assigned
+              </Text>
+              <Text fontSize="$3" color="$gray10" textAlign="center">
+                Assign a training program to get started
+              </Text>
               <Button
-                size="$4"
+                size="$3"
                 backgroundColor="#7c3aed"
                 color="white"
                 onPress={handleAssignProgram}
@@ -440,78 +442,55 @@ export default function AthleteDetailPage() {
           </Card>
         )}
 
-        {/* Goals */}
-        {athlete.goals && athlete.goals.length > 0 && (
-          <Card elevate size="$4" p="$4" backgroundColor="white" mb="$4">
-            <YStack gap="$3">
-              <XStack ai="center" gap="$2">
-                <Target size={20} color="#7c3aed" />
-                <Text fontSize="$5" fontWeight="600" color="$gray12">
-                  Goals
-                </Text>
-              </XStack>
-              <XStack gap="$2" flexWrap="wrap">
-                {athlete.goals.map((goal, index) => (
-                  <YStack
-                    key={index}
-                    backgroundColor="#faf5ff"
-                    px="$3"
-                    py="$2"
-                    borderRadius="$3"
-                  >
-                    <Text fontSize="$3" color="#7c3aed" fontWeight="500">
-                      {goal}
-                    </Text>
-                  </YStack>
-                ))}
-              </XStack>
-            </YStack>
-          </Card>
-        )}
-
-        {/* Stats */}
-        <YStack gap="$3" mb="$4">
-          <XStack ai="center" gap="$2">
-            <Activity size={20} color="#7c3aed" />
-            <Text fontSize="$5" fontWeight="600" color="$gray12">
-              Stats
-            </Text>
-          </XStack>
-          <XStack gap="$3" flexWrap="wrap">
-            <Card elevate size="$3" f={1} minWidth="45%" p="$3" backgroundColor="white">
-              <YStack gap="$1">
-                <Text fontSize="$2" color="$gray11">Workouts</Text>
-                <Text fontSize="$5" fontWeight="600" color="$gray12">
+        {/* Stats Grid */}
+        <Card elevate size="$4" p="$4" backgroundColor="white" mb="$4">
+          <YStack gap="$3">
+            <XStack ai="center" gap="$2">
+              <Activity size={20} color="#7c3aed" />
+              <Text fontSize="$5" fontWeight="600" color="$gray12">
+                Training Stats
+              </Text>
+            </XStack>
+            <XStack flexWrap="wrap" gap="$3">
+              <YStack f={1} minWidth="45%" gap="$1">
+                <Text fontSize="$2" color="$gray10">Total Workouts</Text>
+                <Text fontSize="$5" fontWeight="bold" color="$gray12">
                   {athlete.stats.totalWorkouts}
                 </Text>
               </YStack>
-            </Card>
-            <Card elevate size="$3" f={1} minWidth="45%" p="$3" backgroundColor="white">
-              <YStack gap="$1">
-                <Text fontSize="$2" color="$gray11">Weekly Avg</Text>
-                <Text fontSize="$5" fontWeight="600" color="$gray12">
+              <YStack f={1} minWidth="45%" gap="$1">
+                <Text fontSize="$2" color="$gray10">Weekly Average</Text>
+                <Text fontSize="$5" fontWeight="bold" color="$gray12">
                   {athlete.stats.weeklyAverage}
                 </Text>
               </YStack>
-            </Card>
-            <Card elevate size="$3" f={1} minWidth="45%" p="$3" backgroundColor="white">
-              <YStack gap="$1">
-                <Text fontSize="$2" color="$gray11">Compliance</Text>
-                <Text fontSize="$5" fontWeight="600" color="#10b981">
+              <YStack f={1} minWidth="45%" gap="$1">
+                <Text fontSize="$2" color="$gray10">Compliance Rate</Text>
+                <Text fontSize="$5" fontWeight="bold" color="#10b981">
                   {athlete.stats.complianceRate}%
                 </Text>
               </YStack>
-            </Card>
-            <Card elevate size="$3" f={1} minWidth="45%" p="$3" backgroundColor="white">
-              <YStack gap="$1">
-                <Text fontSize="$2" color="$gray11">Total Volume</Text>
-                <Text fontSize="$4" fontWeight="600" color="$gray12">
+              <YStack f={1} minWidth="45%" gap="$1">
+                <Text fontSize="$2" color="$gray10">Current Streak</Text>
+                <Text fontSize="$5" fontWeight="bold" color="$gray12">
+                  {athlete.stats.currentStreak} days
+                </Text>
+              </YStack>
+              <YStack f={1} minWidth="45%" gap="$1">
+                <Text fontSize="$2" color="$gray10">Avg Session</Text>
+                <Text fontSize="$5" fontWeight="bold" color="$gray12">
+                  {athlete.stats.avgSessionDuration} min
+                </Text>
+              </YStack>
+              <YStack f={1} minWidth="45%" gap="$1">
+                <Text fontSize="$2" color="$gray10">Total Volume</Text>
+                <Text fontSize="$5" fontWeight="bold" color="$gray12">
                   {athlete.stats.totalVolume}
                 </Text>
               </YStack>
-            </Card>
-          </XStack>
-        </YStack>
+            </XStack>
+          </YStack>
+        </Card>
 
         {/* Recent Workouts */}
         <Card elevate size="$4" p="$4" backgroundColor="white" mb="$4">
@@ -525,29 +504,29 @@ export default function AthleteDetailPage() {
               </XStack>
               <Pressable onPress={handleViewHistory}>
                 <Text fontSize="$3" color="#7c3aed" fontWeight="500">
-                  View All
+                  See All
                 </Text>
               </Pressable>
             </XStack>
-            <YStack gap="$3">
+            <YStack>
               {athlete.recentWorkouts.map((workout, index) => (
                 <Pressable key={workout.id} onPress={() => handleViewWorkout(workout.id)}>
                   <YStack>
-                    <XStack ai="center" jc="space-between">
-                      <YStack gap="$1" f={1}>
+                    <XStack ai="center" jc="space-between" py="$2">
+                      <YStack gap="$1">
                         <Text fontSize="$3" fontWeight="600" color="$gray12">
                           {workout.name}
                         </Text>
-                        <XStack gap="$2" flexWrap="wrap">
-                          <Text fontSize="$2" color="$gray11">
-                            {workout.exercises} exercises
-                          </Text>
-                          <Text fontSize="$2" color="$gray11">•</Text>
-                          <Text fontSize="$2" color="$gray11">
+                        <XStack gap="$2">
+                          <Text fontSize="$2" color="$gray10">
                             {workout.duration} min
                           </Text>
-                          <Text fontSize="$2" color="$gray11">•</Text>
-                          <Text fontSize="$2" color="$gray11">
+                          <Text fontSize="$2" color="$gray10">•</Text>
+                          <Text fontSize="$2" color="$gray10">
+                            {workout.exercises} exercises
+                          </Text>
+                          <Text fontSize="$2" color="$gray10">•</Text>
+                          <Text fontSize="$2" color="$gray10">
                             {workout.volume}
                           </Text>
                         </XStack>

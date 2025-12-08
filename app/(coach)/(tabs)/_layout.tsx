@@ -1,3 +1,4 @@
+// app/(coach)/(tabs)/_layout.tsx
 import { Tabs } from "expo-router";
 import { BarChart3, Home, MessageSquare, User, Users } from "lucide-react-native";
 import { Platform } from "react-native";
@@ -24,10 +25,10 @@ export default function CoachTabsLayout() {
       }}
     >
       <Tabs.Screen
-        name="index"
+        name="profile"
         options={{
-          title: 'Dashboard',
-          tabBarIcon: ({ color, size }) => <Home size={size} color={color} />,
+          title: 'Profile',
+          tabBarIcon: ({ color, size }) => <User size={size} color={color} />,
         }}
       />
       <Tabs.Screen
@@ -38,6 +39,13 @@ export default function CoachTabsLayout() {
         }}
       />
       <Tabs.Screen
+        name="index"
+        options={{
+          title: 'Dashboard',
+          tabBarIcon: ({ color, size }) => <Home size={size} color={color} />,
+        }}
+      />
+      <Tabs.Screen
         name="programs"
         options={{
           title: 'Programs',
@@ -45,19 +53,13 @@ export default function CoachTabsLayout() {
         }}
       />
       <Tabs.Screen
-        name="messages"
+        name="chat"
         options={{
           title: 'Messages',
           tabBarIcon: ({ color, size }) => <MessageSquare size={size} color={color} />,
         }}
       />
-      <Tabs.Screen
-        name="profile"
-        options={{
-          title: 'Profile',
-          tabBarIcon: ({ color, size }) => <User size={size} color={color} />,
-        }}
-      />
+      {/* Hidden screens - not shown in tab bar */}
       <Tabs.Screen
         name="settings"
         options={{
@@ -66,12 +68,6 @@ export default function CoachTabsLayout() {
       />
       <Tabs.Screen
         name="analytics"
-        options={{
-          href: null
-        }}
-      />
-      <Tabs.Screen
-        name="chat"
         options={{
           href: null
         }}
